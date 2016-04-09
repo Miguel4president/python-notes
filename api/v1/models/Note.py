@@ -1,12 +1,15 @@
 import datetime
+from sqlalchemy import Column, String, Integer, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import JSON
-from sqlalchemy import Column, String, Integer, DateTime
-from marshmallow import Schema
+from sqlalchemy.orm import relationship
+from marshmallow import Schema, fields
+
+from Tenant import TenantSchema
 
 from Database import db
 
 
-# 14 fields
+# 15 fields
 class Note(db.Model):
     __tablename__ = 'notes2'
 
@@ -28,9 +31,14 @@ class Note(db.Model):
     date_last_modified = Column(DateTime, default=datetime.datetime.utcnow)
     date_2_last_modified = Column(DateTime, default=datetime.datetime.utcnow)
 
+    # Foreign Keys
+    # tenant_id = Column(Integer, ForeignKey('tenant.id'))
+    # tenant = relationship("Tenant")
+
     def __init__(self, property_id, site_visit_id, text, created_by, deal_issues, discussion_points, date, date_2):
         self.property_id = property_id
         self.site_visit_id = site_visit_id
+        # self.tenant_id = tenant_id
         self.text = text
         self.deal_issues = deal_issues
         self.discussion_points = discussion_points
@@ -64,6 +72,8 @@ class Note(db.Model):
 
 
 class NoteSchema(Schema):
+    # tenant = fields.Nested(TenantSchema)
+
     class Meta:
         fields = ("id",
                   "property_id",
