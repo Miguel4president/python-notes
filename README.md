@@ -24,3 +24,12 @@ Need Migrations? We got those!
     python manager.py db upgrade
      - Runs the migrations
      - Will alter the db, know what you're doing
+
+
+
+
+
+Todo:
+1 - Move db instantiation elsewhere
+2 - Separate models into independent files
+3 - Decouple the db stuff a little (why do I need the same db in app and models?)

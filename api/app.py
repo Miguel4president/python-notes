@@ -1,6 +1,6 @@
 import os
 from flask import Flask
-from v1.models.models import db
+from v1.models.Note import db
 from v1.endpoints import note_api
 
 app = Flask(__name__)
