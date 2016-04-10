@@ -1,7 +1,7 @@
 import datetime
 
 from flask import jsonify, Blueprint
-from models.Note import db, Note, note_schema, notes_schema
+from models import db, Note, note_schema, notes_schema
 
 api_v1 = Blueprint('api_v1', __name__)
 

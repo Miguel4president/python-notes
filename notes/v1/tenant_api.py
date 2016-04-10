@@ -1,6 +1,6 @@
 from flask import jsonify
 
-from models.Tenant import db, Tenant, tenant_schema, tenants_schema
+from models import db, Tenant, tenant_schema, tenants_schema
 from note_api import api_v1
 
 
