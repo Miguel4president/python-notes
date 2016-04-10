@@ -1,9 +1,9 @@
 import datetime
+
+from flask import jsonify, Blueprint
 from models.Note import db, Note, note_schema, notes_schema
-from flask import Blueprint, jsonify
 
-
-note_api = Blueprint('note_api', __name__)
+api_v1 = Blueprint('api_v1', __name__)
 
 
 def get_date(day):
@@ -17,21 +17,16 @@ def get_fake_note():
     return note
 
 
-@note_api.route('/test')
-def hello():
-    return "Hello World!"
-
-
-@note_api.route('/', methods=['GET'])
-def get_all_notes():
+@api_v1.route('/notes', methods=['GET'])
+def get_notes():
     all_notes = Note.query.all()
 
     result = notes_schema.dump(all_notes)
     return jsonify({'notes': result.data})
 
 
-@note_api.route('/', methods=['POST'])
-def add_a_fake_note():
+@api_v1.route('/notes', methods=['POST'])
+def add_note():
     note = get_fake_note()
     db.session.add(note)
     db.session.commit()
@@ -40,12 +35,27 @@ def add_a_fake_note():
     return jsonify({'note': result.data})
 
 
-@note_api.route('/<id>', methods=['GET'])
-def get_note_with_id(id):
+@api_v1.route('/notes/<id>', methods=['GET'])
+def get_note(id):
     note = Note.query.filter_by(id=id).first()
 
     result = note_schema.dump(note)
     return jsonify({'note': result.data})
+
+
+@api_v1.route('/notes/<id>', methods=['DELETE'])
+def delete_note(id):
+    note = Note.query.filter_by(id=id).first()
+    db.session.delete(note)
+    db.sessino.commit()
+    return 'success'
+
+
+@api_v1.route('/notes/<id>', methods=['PUT'])
+def update_note():
+    return 'not yet'
+
+
 
 
 

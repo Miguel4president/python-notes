@@ -28,8 +28,14 @@ Need Migrations? We got those!
 
 
 
+Synopsis so far:
+so python huh, you can only really talk about things below yourself in the heirarchy.
+As a script you have no clue who called or where they are, just talk to things below you.
+Counter intuitively, if there is something that you need globally, then it needs to be down the tree or in
+the same directory as everything that needs it.
 
+ - So 'db' is created with the models.
+ - Then the api's create the Blueprint and manage getting the db (next level up)
+  - The init in the api directory exposes db, the api, and the models to above packages.
+ - Finally app gets the db and api from the v1 init
 Todo:
-1 - Move db instantiation elsewhere
-2 - Separate models into independent files
-3 - Decouple the db stuff a little (why do I need the same db in app and models?)

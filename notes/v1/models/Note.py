@@ -1,17 +1,16 @@
 import datetime
+
+from marshmallow import Schema, fields
 from sqlalchemy import Column, String, Integer, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.orm import relationship
-from marshmallow import Schema, fields
 
-from Tenant import TenantSchema
-
-from Database import db
+from Tenant import TenantSchema, db
 
 
 # 15 fields
 class Note(db.Model):
-    __tablename__ = 'notes2'
+    __tablename__ = 'notes'
 
     id = Column(Integer, primary_key=True)
     property_id = Column(Integer, nullable=False)
@@ -32,13 +31,13 @@ class Note(db.Model):
     date_2_last_modified = Column(DateTime, default=datetime.datetime.utcnow)
 
     # Foreign Keys
-    # tenant_id = Column(Integer, ForeignKey('tenant.id'))
-    # tenant = relationship("Tenant")
+    tenant_id = Column(Integer, ForeignKey('tenant.id'))
+    tenant = relationship("Tenant")
 
-    def __init__(self, property_id, site_visit_id, text, created_by, deal_issues, discussion_points, date, date_2):
+    def __init__(self, property_id, site_visit_id, tenant_id, text, created_by, deal_issues, discussion_points, date, date_2):
         self.property_id = property_id
         self.site_visit_id = site_visit_id
-        # self.tenant_id = tenant_id
+        self.tenant_id = tenant_id
         self.text = text
         self.deal_issues = deal_issues
         self.discussion_points = discussion_points
@@ -58,6 +57,7 @@ class Note(db.Model):
                ' id={0.id!r},' \
                ' property_id={0.property_id!r},' \
                ' site_visit_id={0.site_visit_id!r},' \
+               ' tenant_id={0.tenant_id!r},' \
                ' created_by={0.created_by!r},' \
                ' text={0.text!r},' \
                ' last_modified_by={0.last_modified_by!r},' \
@@ -72,12 +72,13 @@ class Note(db.Model):
 
 
 class NoteSchema(Schema):
-    # tenant = fields.Nested(TenantSchema)
+    tenant = fields.Nested(TenantSchema)
 
     class Meta:
         fields = ("id",
                   "property_id",
                   "site_visit_id",
+                  "tenant",
                   "created_by",
                   "text",
                   "deal_issues",

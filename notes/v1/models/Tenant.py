@@ -1,11 +1,13 @@
-from sqlalchemy import Column, String, Integer
 from marshmallow import Schema
+from sqlalchemy import Column, String, Integer
 
-from Database import db
+from flask.ext.sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
 
 
 class Tenant(db.Model):
-    __tablename__ = 'site'
+    __tablename__ = 'tenant'
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
