@@ -3,6 +3,7 @@ import os
 from flask import Flask
 
 from v1 import api_v1, db
+from v1.models import Tenant, Note, Notetype
 
 app = Flask(__name__)
 

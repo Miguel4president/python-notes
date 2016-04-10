@@ -5,8 +5,8 @@ from note_api import api_v1
 
 
 def get_fake_notetype():
-    return Notetype('kewlType', False, site_visit=False, deal_issues=False, discussion_points='{ a: 2 }',
-                    date_2_field_label="Words", delete_lock_until=None)
+    return Notetype(name='kewlType', site_visit=False, deal_issues=False, discussion_points='{ a: 2 }',
+                    date_2_field_label="Words", delete_lock_until=None, date_2_enabled=False, tenant_id=1)
 
 
 def create_json(notetype):

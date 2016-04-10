@@ -13,7 +13,7 @@ def get_date(day):
 def get_fake_note():
     note = Note(created_by='aaron', date=get_date(4), date_2=get_date(3), deal_issues="{ thing: 'va'}",
                 discussion_points="{ another: { thing: 'va' }}", property_id=1, site_visit_id=6,
-                text="Finally finished writting this!", tenant_id=1)
+                text="Finally finished writting this!", tenant_id=1, notetype_id=4)
     return note
 
 

@@ -1,4 +1,4 @@
-from marshmallow import Schema
+from marshmallow import Schema, fields
 from sqlalchemy import Column, String, Integer, Boolean, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.orm import relationship
@@ -19,11 +19,13 @@ class Notetype(db.Model):
     discussion_points = Column(JSON)
 
     # Foreign Keys
-    # tenant_id = Column(Integer, ForeignKey('tenant.id'))
-    # tenant = relationship("Tenant")
+    tenant_id = Column(Integer, ForeignKey('tenant.id'))
+    tenant = relationship("Tenant")
 
-    def __init__(self, name, date_2_enabled, date_2_field_label, site_visit, deal_issues, delete_lock_until, discussion_points):
+    def __init__(self, name, tenant_id, date_2_enabled, date_2_field_label, site_visit, deal_issues,
+                 delete_lock_until, discussion_points):
         self.name = name
+        self.tenant_id = tenant_id
         self.date_2_enabled = date_2_enabled
         self.date_2_field_label = date_2_field_label
         self.site_visit = site_visit
@@ -35,6 +37,7 @@ class Notetype(db.Model):
         return '<Notetype: ' \
                ' id={0.id!r},' \
                ' name={0.name!r},' \
+               ' tenant_id={0.tenant_id!r},' \
                ' date_2_enabled={0.date_2_enabled!r},' \
                ' date_2_field_label={0.date_2_field_label!r},' \
                ' site_visit={0.site_visit!r},' \
@@ -44,10 +47,12 @@ class Notetype(db.Model):
 
 
 class NotetypeSchema(Schema):
+    tenant = fields.Nested(TenantSchema)
 
     class Meta:
         fields = ("id",
                   "name",
+                  "tenant",
                   "date_2_enabled",
                   "date_2_field_label",
                   "site_visit",
