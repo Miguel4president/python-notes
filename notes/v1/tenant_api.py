@@ -1,47 +1,59 @@
-from flask import jsonify
+from flask import jsonify, Blueprint, request
+import query_helper
 
-from models import db, Tenant, tenant_schema, tenants_schema
-from note_api import api_v1
+from models import db, tenant_schema, tenants_schema
+
+# This blueprint has an implied prefix of /api/v1/tenants/<tenant_id>
+tenant_bp = Blueprint('tenant_bp', __name__)
 
 
-def get_fake_tenant():
-    return Tenant(name="astar", public_key="asdr23f325DD")
+def create_json(tenant):
+    if isinstance(tenant, list):
+        result = tenant_schema.dump(tenant)
+        return jsonify({'tenants': result.data})
+    else:
+        result = tenants_schema.dump(tenant)
+        return jsonify({'tenant': result.data})
 
 
-@api_v1.route('/tenants', methods=['GET'])
+@tenant_bp.route('/tenants', methods=['GET'])
 def get_tenants():
-    all_tenants = Tenant.query.all()
+    all_tenants = query_helper.get_tenants()
 
-    result = tenants_schema.dump(all_tenants)
-    return jsonify({'tenants': result.data})
+    return create_json(all_tenants)
 
 
-@api_v1.route('/tenants', methods=['POST'])
+@tenant_bp.route('/tenants', methods=['POST'])
 def create_tenant():
-    tenant = get_fake_tenant()
+    data = request.get_json()
+
+    result = tenant_schema.load(data)
+    tenant = result.data
+
     db.session.add(tenant)
     db.session.commit()
 
-    result = tenant_schema.dump(tenant)
-    return jsonify({'tenant': result.data})
+    return create_json(tenant)
 
 
-@api_v1.route('/tenants/<id>', methods=['GET'])
+@tenant_bp.route('/tenants/<id>', methods=['GET'])
 def get_tenant(id):
-    tenant = Tenant.query.filter_by(id=id).first()
+    tenant = query_helper.get_tenant_by_id(id)
 
-    result = tenant_schema.dump(tenant)
-    return jsonify({'tenant': result.data})
+    return create_json(tenant)
 
 
-@api_v1.route('/tenants/<id>', methods=['PUT'])
+@tenant_bp.route('/tenants/<id>', methods=['PUT'])
 def update_tenant(id):
     return 'not yet, also should require admin priviledge'
 
 
-@api_v1.route('/tenants/<id>', methods=['DELETE'])
+@tenant_bp.route('/tenants/<id>', methods=['DELETE'])
 def delete_tenant(id):
-    return 'not yet, also should require admin priviledge'
+    tenant = query_helper.get_tenant_by_id(id)
+    db.session.delete(tenant)
+    db.session.commit()
+    return create_json(tenant)
 
 
 

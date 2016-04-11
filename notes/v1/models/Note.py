@@ -1,6 +1,6 @@
 import datetime
 
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, post_load
 from sqlalchemy import Column, String, Integer, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.orm import relationship
@@ -80,6 +80,10 @@ class Note(db.Model):
 class NoteSchema(Schema):
     tenant = fields.Nested(TenantSchema)
     notetype = fields.Nested(NotetypeSchema)
+
+    @post_load
+    def make_note(self, data):
+        return Note(**data)
 
     class Meta:
         fields = ("id",

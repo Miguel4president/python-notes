@@ -1,9 +1,12 @@
 import datetime
+import query_helper
 
 from flask import jsonify, Blueprint
 from models import db, Note, note_schema, notes_schema
 
-api_v1 = Blueprint('api_v1', __name__)
+
+# This blueprint has an implied prefix of /api/v1/tenants/<tenant_id>
+note_bp = Blueprint('note_bp', __name__)
 
 
 def get_date(day):
@@ -17,42 +20,50 @@ def get_fake_note():
     return note
 
 
-@api_v1.route('/notes', methods=['GET'])
-def get_notes():
-    all_notes = Note.query.all()
+def create_json(note):
+    if isinstance(note, list):
+        result = notes_schema.dump(note)
+        return jsonify({'notes': result.data})
+    else:
+        result = note_schema.dump(note)
+        return jsonify({'note': result.data})
 
-    result = notes_schema.dump(all_notes)
-    return jsonify({'notes': result.data})
+
+@note_bp.route('/notes', methods=['GET'])
+def get_notes(tenant_id):
+    all_notes = query_helper.get_notes_by_tenant_id(tenant_id)
+
+    return create_json(all_notes)
 
 
-@api_v1.route('/notes', methods=['POST'])
-def add_note():
+@note_bp.route('/notes', methods=['POST'])
+def add_note(tenant_id):
     note = get_fake_note()
+    note.tenant_id = tenant_id
     db.session.add(note)
     db.session.commit()
 
-    result = note_schema.dump(note)
-    return jsonify({'note': result.data})
+    return create_json(note)
 
 
-@api_v1.route('/notes/<id>', methods=['GET'])
-def get_note(id):
-    note = Note.query.filter_by(id=id).first()
+@note_bp.route('/notes/<note_id>', methods=['GET'])
+def get_note(tenant_id, note_id):
+    note = query_helper.get_note_by_id(note_id)
 
-    result = note_schema.dump(note)
-    return jsonify({'note': result.data})
+    return create_json(note)
 
 
-@api_v1.route('/notes/<id>', methods=['DELETE'])
-def delete_note(id):
-    note = Note.query.filter_by(id=id).first()
+@note_bp.route('/notes/<note_id>', methods=['DELETE'])
+def delete_note(tenant_id, note_id):
+    note = query_helper.get_note_by_id(note_id)
     db.session.delete(note)
     db.sessino.commit()
-    return 'success'
+
+    return create_json(note)
 
 
-@api_v1.route('/notes/<id>', methods=['PUT'])
-def update_note():
+@note_bp.route('/notes/<id>', methods=['PUT'])
+def update_note(tenant_id, note_id):
     return 'not yet'
 
 

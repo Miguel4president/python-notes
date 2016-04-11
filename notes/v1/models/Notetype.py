@@ -1,4 +1,4 @@
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, post_load
 from sqlalchemy import Column, String, Integer, Boolean, DateTime, ForeignKey
 from sqlalchemy.dialects.postgresql import JSON
 from sqlalchemy.orm import relationship
@@ -48,6 +48,10 @@ class Notetype(db.Model):
 
 class NotetypeSchema(Schema):
     tenant = fields.Nested(TenantSchema)
+
+    @post_load
+    def make_notetype(self, data):
+        return Notetype(**data)
 
     class Meta:
         fields = ("id",

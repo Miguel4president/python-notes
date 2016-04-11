@@ -38,4 +38,9 @@ the same directory as everything that needs it.
  - Then the api's create the Blueprint and manage getting the db (next level up)
   - The init in the api directory exposes db, the api, and the models to above packages.
  - Finally app gets the db and api from the v1 init
+
+
 Todo:
+1) Move the json stuff into the query helper
+2) Finish POST
+3) Implement PUT

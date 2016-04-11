@@ -1,9 +1,9 @@
 import os
 
-from flask import Flask
+from flask import Flask, request
 
-from v1 import api_v1, db
-from v1.models import Tenant, Note, Notetype
+from v1 import db, notetype_bp, note_bp, tenant_bp
+from v1.models import Tenant
 
 app = Flask(__name__)
 
@@ -11,7 +11,9 @@ app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-app.register_blueprint(api_v1, url_prefix='/api/v1')
+app.register_blueprint(tenant_bp, url_prefix='/api/v1')
+app.register_blueprint(note_bp, url_prefix='/api/v1/tenants/<tenant_id>')
+app.register_blueprint(notetype_bp, url_prefix='/api/v1/tenants/<tenant_id>')
 
 db.init_app(app)
 

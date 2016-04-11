@@ -1,7 +1,10 @@
-from flask import jsonify
+from flask import jsonify, Blueprint, request
+import query_helper
 
 from models import db, Notetype, notetype_schema, notetypes_schema
-from note_api import api_v1
+
+# This blueprint has an implied prefix of /api/v1/tenants/<tenant_id>
+notetype_bp = Blueprint('notetype_bp', __name__)
 
 
 def get_fake_notetype():
@@ -18,37 +21,40 @@ def create_json(notetype):
         return jsonify({'notetype': result.data})
 
 
-@api_v1.route('/notetypes', methods=['GET'])
-def get_notetypes():
-    all_notetypes = Notetype.query.all()
+@notetype_bp.route('/notetypes', methods=['GET'])
+def get_notetypes(tenant_id):
+    all_notetypes = query_helper.get_notetypes_by_tenant(tenant_id)
 
     return create_json(all_notetypes)
 
 
-@api_v1.route('/notetypes', methods=['POST'])
-def create_notetypes():
-    notetype = get_fake_notetype()
+@notetype_bp.route('/notetypes', methods=['POST'])
+def create_notetypes(tenant_id):
+    data = request.get_json()
+    result = notetypes_schema.load(data)
+    notetype = result.data
+
     db.session.add(notetype)
     db.session.commit()
 
     return create_json(notetype)
 
 
-@api_v1.route('/notetypes/<id>', methods=['GET'])
-def get_notetype(id):
-    notetype = Notetype.query.filter_by(id=id).first()
+@notetype_bp.route('/notetypes/<id>', methods=['GET'])
+def get_notetype(tenant_id, id):
+    notetype = query_helper.get_notetype_by_id(id)
 
     return create_json(notetype)
 
 
-@api_v1.route('/notetypes/<id>', methods=['PUT'])
-def update_notetype():
+@notetype_bp.route('/notetypes/<id>', methods=['PUT'])
+def update_notetype(tenant_id, id):
     return 'not yet'
 
 
-@api_v1.route('/notetypes/<id>', methods=['DELETE'])
-def delete_notetype(id):
-    notetype = Notetype.query.filter_by(id=id).first()
+@notetype_bp.route('/notetypes/<id>', methods=['DELETE'])
+def delete_notetype(tenant_id, id):
+    notetype = query_helper.get_notetype_by_id(id)
     db.session.delete(notetype)
     db.session.commit()
-    return "success"
+    return create_json(notetype)
