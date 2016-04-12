@@ -1,4 +1,6 @@
-from models import Note, Notetype, Tenant, db
+from models.Note import Note
+from models.Notetype import Notetype
+from models.Tenant import Tenant, db
 
 
 # Note Queries
@@ -49,4 +51,5 @@ def get_tenant_by_id(tenant_id):
 
 def get_tenant_by_name(tenant_name):
     return Tenant.query.filter_by(name=tenant_name).first()
+
 

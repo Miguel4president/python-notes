@@ -1,4 +1,4 @@
-from marshmallow import Schema, post_load
+from marshmallow import Schema, post_load, fields
 from sqlalchemy import Column, String, Integer
 
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -25,15 +25,15 @@ class Tenant(db.Model):
 
 
 class TenantSchema(Schema):
+    id = fields.String(dump_only=True)
 
     @post_load
     def make_tenant(self, data):
         return Tenant(**data)
 
     class Meta:
-        fields = ("id",
-                  "name",
-                  "public_key")
+        ordered = True
+        additional = ("name", "public_key")
 
 tenants_schema = TenantSchema(many=True)
 tenant_schema = TenantSchema()

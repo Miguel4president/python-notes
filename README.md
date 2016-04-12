@@ -41,6 +41,12 @@ the same directory as everything that needs it.
 
 
 Todo:
-1) Move the json stuff into the query helper
-2) Finish POST
-3) Implement PUT
+?) Move the json stuff into the query helper
+4) Figure out how to handle nested marshmallow schemas for load
+ 4.1) get rid of the double schema thing, maybe a post dump
+
+
+Diddo:
+1) Notetypes endpoints all working
+2) Tenant endpoints all working
+2) Note endpoints all working

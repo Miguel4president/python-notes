@@ -46,23 +46,25 @@ class Notetype(db.Model):
                ' discussion_points={0.discussion_points!r},'.format(self)
 
 
+# Expand tenant on dump, expect just the id for load
 class NotetypeSchema(Schema):
-    tenant = fields.Nested(TenantSchema)
+    id = fields.Integer(dump_only=True)
+    tenant = fields.Nested(TenantSchema, dump_only=True)
+    tenant_id = fields.Integer(load_only=True)
 
     @post_load
     def make_notetype(self, data):
         return Notetype(**data)
 
     class Meta:
-        fields = ("id",
-                  "name",
-                  "tenant",
-                  "date_2_enabled",
-                  "date_2_field_label",
-                  "site_visit",
-                  "deal_issues",
-                  "delete_lock_until",
-                  "discussion_points")
+        ordered = True
+        additional = ("name",
+                      "date_2_enabled",
+                      "date_2_field_label",
+                      "site_visit",
+                      "deal_issues",
+                      "delete_lock_until",
+                      "discussion_points")
 
 notetype_schema = NotetypeSchema()
 notetypes_schema = NotetypeSchema(many=True)

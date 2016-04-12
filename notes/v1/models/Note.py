@@ -38,25 +38,6 @@ class Note(db.Model):
     notetype_id = Column(Integer, ForeignKey('notetype.id'))
     notetype = relationship("Notetype")
 
-    def __init__(self, property_id, site_visit_id, tenant_id, notetype_id, text, created_by, deal_issues, discussion_points, date, date_2):
-        self.property_id = property_id
-        self.site_visit_id = site_visit_id
-        self.tenant_id = tenant_id
-        self.notetype_id = notetype_id
-        self.text = text
-        self.deal_issues = deal_issues
-        self.discussion_points = discussion_points
-        self.date_2 = date_2
-
-        self.created_by = created_by
-        self.last_modified_by = created_by
-        self.date_2_last_modified_by = created_by
-
-        self.date = date
-        self.date_created = date
-        self.date_last_modified = date
-        self.date_2_last_modified = date
-
     def __repr__(self):
         return '<Note: ' \
                ' id={0.id!r},' \
@@ -78,30 +59,35 @@ class Note(db.Model):
 
 
 class NoteSchema(Schema):
-    tenant = fields.Nested(TenantSchema)
-    notetype = fields.Nested(NotetypeSchema)
+    tenant_id = fields.Integer(load_only=True)
+    notetype_id = fields.Integer(load_only=True)
+
+    id = fields.Integer(dump_only=True)
+    tenant = fields.Nested(TenantSchema, dump_only=True)
+    notetype = fields.Nested(NotetypeSchema, dump_only=True)
+    created_by = fields.String(dump_only=True)
+    date_created = fields.DateTime(dump_only=True)
+    date_last_modified = fields.DateTime(dump_only=True)
+    date_2_last_modified = fields.DateTime(dump_only=True)
+    date_2_last_modified_by = fields.DateTime(dump_only=True)
 
     @post_load
     def make_note(self, data):
+        print "Here before creating the note"
+        print data
+        print "that was the data ^^"
+
         return Note(**data)
 
     class Meta:
-        fields = ("id",
-                  "property_id",
-                  "site_visit_id",
-                  "tenant",
-                  "notetype",
-                  "created_by",
-                  "text",
-                  "deal_issues",
-                  "discussion_points",
-                  "date",
-                  "date_created",
-                  "date_last_modified",
-                  "date_2",
-                  "date_2_last_modified",
-                  "date_2_last_modified_by")
-
+        ordered = True
+        additional = ("property_id",
+                      "site_visit_id",
+                      "text",
+                      "deal_issues",
+                      "discussion_points",
+                      "date",
+                      "date_2")
 
 note_schema = NoteSchema()
 notes_schema = NoteSchema(many=True)

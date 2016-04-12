@@ -1,9 +1,8 @@
 import os
 
-from flask import Flask, request
+from flask import Flask
 
 from v1 import db, notetype_bp, note_bp, tenant_bp
-from v1.models import Tenant
 
 app = Flask(__name__)
 
@@ -17,7 +16,8 @@ app.register_blueprint(notetype_bp, url_prefix='/api/v1/tenants/<tenant_id>')
 
 db.init_app(app)
 
-print app.url_map
+if app.config.get('DEVELOPMENT'):
+    print app.url_map
 
 if __name__ == '__main__':
     app.run()
