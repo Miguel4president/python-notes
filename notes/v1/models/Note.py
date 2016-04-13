@@ -59,12 +59,10 @@ class Note(db.Model):
 
 
 class NoteSchema(Schema):
-    tenant_id = fields.Integer(load_only=True)
     notetype_id = fields.Integer(load_only=True)
 
-    id = fields.Integer(dump_only=True)
-    tenant = fields.Nested(TenantSchema, dump_only=True)
     notetype = fields.Nested(NotetypeSchema, dump_only=True)
+    id = fields.Integer(dump_only=True)
     created_by = fields.String(dump_only=True)
     date_created = fields.DateTime(dump_only=True)
     date_last_modified = fields.DateTime(dump_only=True)
@@ -73,15 +71,12 @@ class NoteSchema(Schema):
 
     @post_load
     def make_note(self, data):
-        print "Here before creating the note"
-        print data
-        print "that was the data ^^"
-
         return Note(**data)
 
     class Meta:
         ordered = True
         additional = ("property_id",
+                      "tenant_id",
                       "site_visit_id",
                       "text",
                       "deal_issues",

@@ -4,6 +4,8 @@ from flask import jsonify, Blueprint, request
 from models import db
 from models.Note import note_schema, notes_schema
 
+from auth_tool import token_auth
+
 
 # Expects 'tenant_id' prefix
 note_bp = Blueprint('note_bp', __name__)
@@ -32,6 +34,7 @@ def create_json(note):
 
 
 @note_bp.route('/notes', methods=['GET'])
+@token_auth
 def get_notes(tenant_id):
     all_notes = query_helper.get_notes_by_tenant_id(tenant_id)
 
@@ -39,6 +42,7 @@ def get_notes(tenant_id):
 
 
 @note_bp.route('/notes', methods=['POST'])
+@token_auth
 def add_note(tenant_id):
     note = create_note_from_request(request, tenant_id)
 
@@ -49,6 +53,7 @@ def add_note(tenant_id):
 
 
 @note_bp.route('/notes/<note_id>', methods=['GET'])
+@token_auth
 def get_note(tenant_id, note_id):
     note = query_helper.get_note_by_id(note_id)
 
@@ -56,6 +61,7 @@ def get_note(tenant_id, note_id):
 
 
 @note_bp.route('/notes/<id>', methods=['PUT'])
+@token_auth
 def update_note(tenant_id, id):
     note = create_note_from_request(request, tenant_id)
     note.id = id
@@ -67,6 +73,7 @@ def update_note(tenant_id, id):
 
 
 @note_bp.route('/notes/<note_id>', methods=['DELETE'])
+@token_auth
 def delete_note(tenant_id, note_id):
     note = query_helper.get_note_by_id(note_id)
     db.session.delete(note)

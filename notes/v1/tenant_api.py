@@ -3,6 +3,8 @@ import query_helper
 
 from models import db, Tenant
 
+from auth_tool import basic_auth
+
 # This blueprint has an implied prefix of /api/v1/tenants/<tenant_id>
 tenant_bp = Blueprint('tenant_bp', __name__)
 
@@ -25,6 +27,7 @@ def create_json(tenant):
 
 
 @tenant_bp.route('/tenants', methods=['GET'])
+@basic_auth
 def get_tenants():
     all_tenants = query_helper.get_tenants()
 
@@ -32,6 +35,7 @@ def get_tenants():
 
 
 @tenant_bp.route('/tenants', methods=['POST'])
+@basic_auth
 def create_tenant():
     tenant = create_tenant_from_request(request)
 
@@ -42,6 +46,7 @@ def create_tenant():
 
 
 @tenant_bp.route('/tenants/<id>', methods=['GET'])
+@basic_auth
 def get_tenant(id):
     tenant = query_helper.get_tenant_by_id(id)
 
@@ -49,6 +54,7 @@ def get_tenant(id):
 
 
 @tenant_bp.route('/tenants/<id>', methods=['PUT'])
+@basic_auth
 def update_tenant(id):
     tenant = create_tenant_from_request(request)
     tenant.id = id
@@ -60,16 +66,9 @@ def update_tenant(id):
 
 
 @tenant_bp.route('/tenants/<id>', methods=['DELETE'])
+@basic_auth
 def delete_tenant(id):
     tenant = query_helper.get_tenant_by_id(id)
     db.session.delete(tenant)
     db.session.commit()
     return "Success"
-
-
-
-
-
-
-
-

@@ -49,8 +49,6 @@ class Notetype(db.Model):
 # Expand tenant on dump, expect just the id for load
 class NotetypeSchema(Schema):
     id = fields.Integer(dump_only=True)
-    tenant = fields.Nested(TenantSchema, dump_only=True)
-    tenant_id = fields.Integer(load_only=True)
 
     @post_load
     def make_notetype(self, data):
@@ -59,6 +57,7 @@ class NotetypeSchema(Schema):
     class Meta:
         ordered = True
         additional = ("name",
+                      "tenant_id",
                       "date_2_enabled",
                       "date_2_field_label",
                       "site_visit",

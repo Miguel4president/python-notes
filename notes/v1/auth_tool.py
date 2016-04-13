@@ -2,10 +2,10 @@
 from flask import request, Response
 from functools import wraps
 
-from flask.ext.login import LoginManager
+# from flask.ext.login import LoginManager
 
 
-login_manager = LoginManager()
+# login_manager = LoginManager()
 
 
 # This is the validation on the pair
@@ -13,7 +13,7 @@ def check_auth(username, password):
     return username == 'admin' and password == 'secret'
 
 
-#         Now validate between the token and something related to the public key of the site
+# Now validate between the token and something related to the public key of the site
 def verify_token(token, tenant_id):
     # decrypt token...I think
     return True
@@ -44,30 +44,40 @@ def basic_auth(f):
     return decorated
 
 
-def token_auth(func):
+def cookie_auth(func):
     @wraps(func)
     def decorated(*args, **kwargs):
-        tenant_id = request.view_args['tenant_id']
-        token = request.headers['myToken']
+        tenant_id = request.view_args.get('tenant_id')
+        token = request.cookies.get('cookieToken')
         if not token or not verify_token(token, tenant_id):
             return token_authenticate()
         return func(*args, **kwargs)
     return decorated
 
 
-# login_manager.init_app(app)
-@login_manager.request_loader
-def load_user_from_request(request):
+def token_auth(func):
+    @wraps(func)
+    def decorated(*args, **kwargs):
+        tenant_id = request.view_args.get('tenant_id')
+        token = request.headers.get('myToken')
+        if not token or not verify_token(token, tenant_id):
+            return token_authenticate()
+        return func(*args, **kwargs)
+    return decorated
 
-    # try to login using token match
-    tenant_id = request.view_args['tenant_id']
-    token = request.headers['myToken']
-    if token and verify_token(token, tenant_id):
-        return "a good thing"
 
-    # try to login using Basic Auth
-    auth = request.authorization
-    if not auth or not check_auth(auth.username, auth.password):
-        return None
-
-    return "something good, I guess"
+# @login_manager.request_loader
+# def load_user_from_request(request):
+#
+#     # try to login using token match
+#     tenant_id = request.view_args['tenant_id']
+#     token = request.headers['myToken']
+#     if token and verify_token(token, tenant_id):
+#         return "a good thing"
+#
+#     # try to login using Basic Auth
+#     auth = request.authorization
+#     if not auth or not check_auth(auth.username, auth.password):
+#         return None
+#
+#     return "something good, I guess"
