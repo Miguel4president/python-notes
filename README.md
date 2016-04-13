@@ -41,6 +41,9 @@ the same directory as everything that needs it.
 
 
 Todo:
+?) public/private key stuff
+?) basic auth stuff
+?) Testing framework?!
 ?) Move the json stuff into the query helper
 4) Figure out how to handle nested marshmallow schemas for load
  4.1) get rid of the double schema thing, maybe a post dump

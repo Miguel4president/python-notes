@@ -5,7 +5,7 @@ from models import db
 from models.Note import note_schema, notes_schema
 
 
-# This blueprint has an implied prefix of /api/v1/tenants/<tenant_id>
+# Expects 'tenant_id' prefix
 note_bp = Blueprint('note_bp', __name__)
 
 
