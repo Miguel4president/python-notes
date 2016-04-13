@@ -15,10 +15,8 @@ app.register_blueprint(note_bp, url_prefix='/api/v1/tenants/<tenant_id>')
 app.register_blueprint(notetype_bp, url_prefix='/api/v1/tenants/<tenant_id>')
 
 db.init_app(app)
-# login_manager.init_app(app)
 
-
-if app.config.get('DEVELOPMENT'):
+if app.config.get('DEVELOPMENT') and not app.config.get('TESTING'):
     print app.url_map
 
 if __name__ == '__main__':

@@ -2,11 +2,6 @@
 from flask import request, Response
 from functools import wraps
 
-# from flask.ext.login import LoginManager
-
-
-# login_manager = LoginManager()
-
 
 # This is the validation on the pair
 def check_auth(username, password):
@@ -64,20 +59,3 @@ def token_auth(func):
             return token_authenticate()
         return func(*args, **kwargs)
     return decorated
-
-
-# @login_manager.request_loader
-# def load_user_from_request(request):
-#
-#     # try to login using token match
-#     tenant_id = request.view_args['tenant_id']
-#     token = request.headers['myToken']
-#     if token and verify_token(token, tenant_id):
-#         return "a good thing"
-#
-#     # try to login using Basic Auth
-#     auth = request.authorization
-#     if not auth or not check_auth(auth.username, auth.password):
-#         return None
-#
-#     return "something good, I guess"
